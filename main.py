@@ -21,6 +21,11 @@ def shorthen_url(request: URLRequest):
     conn = sqlite3.connect("urls.db")
     cursor = conn.cursor()
     code = "".join(random.choices(string.ascii_letters, k=6))
+    while True: 
+        cursor.execute("SELECT short_links FROM url WHERE short_links = ?", (code,))
+        if not cursor.fetchone():
+            break
+        code = "".join(random.choices(string.ascii_letters, k=6))
     cursor.execute("INSERT OR REPLACE INTO url (short_links, long_links) VALUES (?, ?)", (code, request.url))
     conn.commit()
     return {"short_url": f"http://localhost:8000/{code}"}
